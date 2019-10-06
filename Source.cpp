@@ -1,25 +1,36 @@
 #include<iostream>
 using namespace std;
 
-void print(int data[], int si)
-{
-	for (int i = 0; i < si; i++)
-	{
-		for (int j = 0; j < si - 1; j++)
-		{
-			if (data[j]>data[i]){
-			int a = data[i];
-			data[i] = data[j];
-			data[j] = a;}
-		}
-	}
-		for (int i = 0; i < si; i++)
-		cout << data[i] << endl;
-}
 
 int main()
-{
-	int mass[10] = {1,2,3,3,6,8,2,3,5,3};
-	int size = sizeof(mass) / sizeof(mass[0]);
-	print(mass, size);
+{	
+	setlocale(LC_ALL, "");
+	int masc[13];
+	int nom;
+	int cono;
+	cout << "введите кол-во номеров" << endl;
+	cin >> cono;	
+	for (int i = 0; i < cono; i++) {
+		int s = 0;
+		int a = 10;
+		cout << "введите номер" << endl;
+		cin >> nom;
+		for (int j = 0; j < 13; j++) {
+			masc[j] = nom % 10;
+			nom /= 10;
+			cout <<masc[j]<<endl;
+		}
+		for (int k = 11; k >= 0; k--) {
+			if (k % 2 == 0)
+				s += masc[k];
+			else
+				s += masc[k] * 3;
+		}
+		s %= 10;
+		cout << s;
+		if (10 - s == masc[11])
+			cout << "данный номер действителен";
+		else
+			cout<<"данный номер не действителен";
+	}
 } 
