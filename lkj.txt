@@ -1,0 +1,423 @@
+date.cpp
+
+#include "Date.hpp"
+#include <iostream>
+#include <string>
+
+using namespace std;
+using namespace ext;
+
+namespace ext
+{
+	string monthToString(Month month)
+	{
+		switch (month)
+		{
+		case Month::January:
+			return "january";
+		case Month::February:
+			return "february";
+		case Month::March:
+			return "march";
+		case Month::April:
+			return "April";
+		case Month::May:
+			return "May";
+		case Month::June:
+			return "June";
+		case Month::July:
+			return "July";
+		case Month::August:
+			return "August";
+		case Month::September:
+			return "September";
+		case Month::October:
+			return "October";
+		case Month::Novemver:
+			return "Novemver";
+		case Month::December:
+			return "December";
+		default:
+			throw exception("invalid month");
+		}
+	}
+
+	void print(Date data, DateFormat format)
+	{
+		cout << data.year << " ";
+		print(data.month, format);
+		cout << data.day;
+	}
+
+	void print(Month month, DateFormat format)
+	{
+		if (format == DateFormat::MonthAsInt)
+		{
+			cout << static_cast<int>(month) << " ";
+		}
+		else if (format == DateFormat::MonthAsString)
+		{
+			cout << monthToString(month) << " ";
+		}
+		else
+		{
+			throw exception("invalid format of month");
+		}
+	}
+
+	bool operator == (const Date lhs, const Date rhs)
+	{
+		return lhs.day == rhs.day
+			&& lhs.month == rhs.month
+			&& lhs.year == rhs.year;
+	}
+
+	bool operator != (const Date lhs, const Date rhs)
+	{
+		return !(lhs == rhs);
+	}
+	TimeDelta operator + (const TimeDelta lhs, const TimeDelta rhs) {
+		return TimeDelta{ lhs.delta + rhs.delta };
+	}
+	TimeDelta operator - (const TimeDelta lhs, const TimeDelta rhs) {
+		return(lhs - rhs);
+	}
+	TimeDelta operator * (const TimeDelta delta, int multiplier) {
+		return(delta * multiplier);
+	}
+	TimeDelta operator * (int multiplier, const TimeDelta delta) {
+		return(delta * multiplier);
+	}
+	TimeDelta operator / (const TimeDelta delta, int multiplier) {
+		return(delta / multiplier);
+	}
+	TimeDelta operator ++ (TimeDelta& delta) {
+		return delta = delta*+ 1;
+	}	
+	
+	Season getSeason(Month month) {
+		switch (month)
+		{
+		case Month::January:
+			return Season::Winter;
+		case Month::February:
+			return Season::Winter;
+		case Month::March:
+			return Season::Spring;
+		case Month::April:
+			return Season::Spring;
+		case Month::May:
+			return Season::Spring;
+		case Month::June:
+			return Season::Summer;
+		case Month::July:
+			return Season::Summer;
+		case Month::August:
+			return Season::Summer;
+		case Month::September:
+			return Season::Autumn;
+		case Month::October:
+			return Season::Autumn;
+		case Month::Novemver:
+			return Season::Autumn;
+		case Month::December:
+			return Season::Winter;
+		default:
+			throw exception("invalid month");
+		}
+	}
+		
+	Season getSeason(Date date)
+	{
+		switch (date.month)
+		{
+		case Month::January:
+			return Season::Winter;
+		case Month::February:
+			return Season::Winter;
+		case Month::March:
+			return Season::Spring;
+		case Month::April:
+			return Season::Spring;
+		case Month::May:
+			return Season::Spring;
+		case Month::June:
+			return Season::Summer;
+		case Month::July:
+			return Season::Summer;
+		case Month::August:
+			return Season::Summer;
+		case Month::September:
+			return Season::Autumn;
+		case Month::October:
+			return Season::Autumn;
+		case Month::Novemver:
+			return Season::Autumn;
+		case Month::December:
+			return Season::Winter;
+		default:
+			throw exception("invalid month");
+		}
+
+	}
+
+	TimeDelta countJND(Date date)
+	{
+		TimeDelta a = TimeDelta{ 14 } -TimeDelta{ static_cast<int>(date.month) } / 12;
+		TimeDelta y = TimeDelta{ date.year } +TimeDelta{ 4800 } -a;
+		TimeDelta m = TimeDelta{ static_cast<int>(date.month) } + 12*a - TimeDelta{ 3 };
+		return TimeDelta{ TimeDelta{date.day} +((153 * m + TimeDelta{2}) / 5) + 365 * y + y / 4 - y / 100 + y / 400 - TimeDelta{32045} };
+	}
+}
+
+
+
+main.cpp
+
+#include <iostream>
+#include "Date.hpp"
+
+using namespace std;
+using namespace ext;
+
+int main()
+{
+	//void print(Date data, DateFormat format = DateFormat::MonthAsInt);
+
+	//Date date = { 2001, static_cast<Month>(10), 12 };
+
+	Date date = { 2001, Month::March, 12 };
+	print(date, DateFormat::MonthAsInt);	// 2001 3 12
+	cout << endl;
+	print(date);
+	cout << endl;
+	print(date, DateFormat::MonthAsString);	// 2001 march 12	
+	cout << endl;
+
+	//void print(Month month, DateFormat format = DateFormat::MonthAsInt);
+	Month month = Month::February;
+	print(month, DateFormat::MonthAsInt);	// 2
+	cout << endl;
+	print(month, DateFormat::MonthAsString);	// february
+	cout << endl;
+
+	// bool operator == (const Date lhs, const Date rhs);
+
+	Date first = { 2001, Month::February, 12 };
+	Date second = { 2001, Month::February, 12 };
+	Date third = { 2001, Month::February, 13 };
+
+	cout << (first == second) << endl; // true
+	cout << (first == third) << endl; // false
+
+	cout << (first != second) << endl; // false
+	cout << (first != third) << endl; // true
+
+	//Season getSeason(Date date);
+
+	Date dateForSeason{ 2019, Month::April, 15 };
+	Season season = getSeason(dateForSeason); // Spring
+
+	TimeDelta f{ 25 };
+	TimeDelta s{ 50 };
+
+	TimeDelta r = f + s;
+	Date dateJND{ 1,Month::December,2018 };
+	countJND(dateJND);
+}
+
+
+
+date.hpp
+
+#pragma once
+
+namespace ext
+{
+	enum class Month
+	{
+		January = 1,
+		February=2,
+		March=3,
+		April=4,
+		May=5,
+		June=6,
+		July=7,
+		August=8,
+		September=9,
+		October=10,
+		Novemver=11,
+		December=12
+	};
+
+	enum class DateFormat
+	{
+		MonthAsInt,
+		MonthAsString
+	};
+
+	enum class Season
+	{
+		Winter,
+		Spring,
+		Summer,
+		Autumn
+	};
+
+	enum class SortBy
+	{
+		Date,
+		Season
+	};
+
+	struct Date
+	{
+		int year;
+		Month month;
+		int day;
+	};
+
+	struct TimeDelta
+	{
+		int delta;
+	};
+
+	/*
+		Возвращает Юлианскую дату
+		https://ru.wikipedia.org/wiki/%D0%AE%D0%BB%D0%B8%D0%B0%D0%BD%D1%81%D0%BA%D0%B0%D1%8F_%D0%B4%D0%B0%D1%82%D0%B0
+		раздел "Вычисление номера юлианского дня (JDN) по дате григорианского календаря"
+		Тестовые данные					Ожидаемый результат
+		1.12.2018					2458454
+		1.1.2018					2458120
+		1.6.2000					2451697
+		21.12.2012					2456283
+	*/
+	TimeDelta countJND(Date date);
+
+	/*
+		Рассчитывает количество дней между двумя датами.
+		При реализвации используйте CountJND
+	*/
+	TimeDelta countDistance(Date from, Date to);
+
+	/*
+		Выводит в консоль
+	*/
+	void print(Date data, DateFormat format = DateFormat::MonthAsInt);
+	void print(Month month, DateFormat format = DateFormat::MonthAsInt);
+	void print(TimeDelta delta);
+
+	/*
+		Возвращает сезон (зима, весна, лето, осень) передаваемой даты
+	*/
+	Season getSeason(Date date); //+
+	Season getSeason(Month month);//+
+
+	/*
+		Написать перегрузку для следующих логических операторов
+	*/
+	bool operator == (const Date lhs, const Date rhs);
+	bool operator != (const Date lhs, const Date rhs);
+	bool operator < (const Date lhs, const Date rhs);
+	bool operator <= (const Date lhs, const Date rhs);
+	bool operator > (const Date lhs, const Date rhs);
+	bool operator >= (const Date lhs, const Date rhs);
+
+	/*
+		Написать перегрузку для следующих арифметических операторов
+	*/
+	Date operator + (const Date date, const TimeDelta delta);
+	Date operator + (const TimeDelta delta, const Date date);
+	TimeDelta operator + (const TimeDelta lhs, const TimeDelta rhs); //+
+	Date operator - (const Date date, const TimeDelta delta);
+	Date operator - (const TimeDelta delta, const Date date);
+	TimeDelta operator - (const TimeDelta lhs, const TimeDelta rhs);//+
+
+	TimeDelta operator * (const TimeDelta delta, int multiplier);//+
+	TimeDelta operator * (int multiplier, const TimeDelta delta);
+	TimeDelta operator / (const TimeDelta delta, int multiplier);
+	TimeDelta operator / (int multiplier, const TimeDelta delta);
+
+	/*-----Часть для домашнего задания №4-----*/
+
+	TimeDelta operator ++ (TimeDelta& delta);//+
+	TimeDelta operator ++ (TimeDelta& delta, int);//+
+
+	TimeDelta operator -- (TimeDelta& delta);
+	TimeDelta operator -- (TimeDelta& delta, int);
+
+	Date operator ++ (Date& delta);
+	Date operator ++ (Date& delta, int);
+
+	Date operator -- (Date& delta);
+	Date operator -- (Date& delta, int);
+
+	/*
+		Меняет даты местами
+	*/
+	void swap(Date& lhs, Date& rhs);
+
+	/*
+		Меняет временные интервалы местами
+	*/
+	void swap(TimeDelta& lhs, TimeDelta& rhs);//+
+
+	/*
+		Возвращает ссылку на большую дату
+	*/
+	Date& max(Date& lhs, Date& rsh);//+
+
+	/*
+		Возвращает указатель на меньшую дату
+	*/
+	Date& min(Date& lhs, Date& rsh);
+
+	/*
+		Возвращает указатель на минимальную дату в переданном массиве дат
+	*/
+	Date& getMinDate(Date dates[], int size);//+
+
+	/*
+		Возвращает указатель на максимальную дату в переданном массиве дат
+	*/
+	Date& getMaxDate(Date dates[], int size);
+
+	/*
+		Сортирует массив дат по указанному критерию
+	*/
+	void sort(Date dates[], SortBy sortBy = SortBy::Date);
+
+	/*
+		Проверяет может ли существовать дата с передаваемыми значениями.
+		В случае успеха возвращает true, и заполняет дату по переданному адресу.
+		Если дата с переданными параметрами существовать не может,
+		возвращает пустой указатель.
+	*/
+	Date* tryFillDate(int year, int month, int day);
+}
+
+
+
+
+#include <string>
+#include <iostream>
+
+using namespace std;
+
+int main()
+{
+	bool per1 = 0;
+	printf("%5s%-5s%5s%5u%5s%3s%-5u\n", " ", "Bool","|", sizeof(bool),"|"," ", per1);
+	int per2 = 123;
+	printf("%5s%-5s%5s%5u%5s%3s%-5u\n", " ", "Int", "|", sizeof(int), "|", " ", per2);
+	long per3 = 12345;
+	printf("%5s%-5s%5s%5u%5s%3s%-5u\n", " ", "Long", "|", sizeof(long), "|", " ", per3);
+	float per4 = 0.1234;
+	printf("%5s%-5s%5s%5u%5s%3s%-5.3f\n"," ", "Float", "|", sizeof(float), "|", " ", per4);
+    char per5[]="abc";
+	printf("%5s%-5s%5s%5u%5s%3s%-5s\n", " ", "Char", "|", sizeof(char), "|", " ", per5);
+	short per6 = 123;
+	printf("%5s%-5s%5s%5u%5s%3s%-5u\n", " ", "Short", "|", sizeof(short), "|", " ", per6);
+	unsigned short per7 = 123;
+	printf("%5s%-5s%5s%5u%5s%5u%5s%3s%-5u\n", " ", "Short", "|", sizeof(short), "|",min(), " ", per7);
+}
